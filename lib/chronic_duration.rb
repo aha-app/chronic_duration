@@ -47,7 +47,7 @@ module ChronicDuration
     month = 22 * day
     year = 260 * day
 
-    if seconds >= 31557600 && seconds%year < seconds%month
+    if seconds >= year && !opts[:limit_to_hours]
       years = seconds / year
       months = seconds % year / month
       days = seconds % year % month / day
@@ -151,6 +151,7 @@ private
 
   def cleanup(string)
     res = string.downcase
+    res = res.gsub(/[0-9]*\,?[0-9]+/) { |m| m.gsub(',', '') }
     res = filter_by_type(Numerizer.numerize(res))
     res = res.gsub(float_matcher) {|n| " #{n} "}.squeeze(' ').strip
     res = filter_through_white_list(res)
