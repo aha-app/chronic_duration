@@ -2,6 +2,18 @@ require 'numerizer' unless defined?(Numerizer)
 
 module ChronicDuration
 
+  HOURS_IN_DAY  = 8
+  DAYS_IN_WEEK  = 5
+  DAYS_IN_MONTH = 22
+  DAYS_IN_YEAR  = 260
+
+  MINUTE        = 60
+  HOUR          = 60 * MINUTE         # 3600
+  DAY           = HOURS_IN_DAY * HOUR # 28800
+  WEEK          = DAYS_IN_WEEK * DAY  # 144000
+  MONTH         = DAYS_IN_MONTH * DAY # 633600
+  YEAR          = DAYS_IN_YEAR * DAY  # 7488000
+
   extend self
 
   class DurationParseError < StandardError
@@ -41,29 +53,16 @@ module ChronicDuration
 
     decimal_places = seconds.to_s.split('.').last.length if seconds.is_a?(Float)
 
-    minute = 60
-    hour = 60 * minute
-    day = 8 * hour
-    month = 22 * day
-    year = 260 * day
-
-    if seconds >= 31557600 && seconds%year < seconds%month
-      years = seconds / year
-      months = seconds % year / month
-      days = seconds % year % month / day
-      hours = seconds % year % month % day / hour
-      minutes = seconds % year % month % day % hour / minute
-      seconds = seconds % year % month % day % hour % minute
-    elsif seconds >= 60
-      minutes = (seconds / 60).to_i
-      seconds = seconds % 60
-      if minutes >= 60
-        hours = (minutes / 60).to_i
-        minutes = (minutes % 60).to_i
+    if seconds >= 60
+      minutes = (seconds / MINUTE).to_i
+      seconds = seconds % MINUTE
+      if minutes >= MINUTE
+        hours = (minutes / MINUTE).to_i
+        minutes = (minutes % MINUTE).to_i
         if !opts[:limit_to_hours]
-          if hours >= 8
-            days = (hours / 8).to_i
-            hours = (hours % 8).to_i
+          if hours >= HOURS_IN_DAY
+            days = (hours / HOURS_IN_DAY).to_i
+            hours = (hours % HOURS_IN_DAY).to_i
           end
         end
       end
@@ -166,12 +165,12 @@ private
   def duration_units_seconds_multiplier(unit)
     return 0 unless duration_units_list.include?(unit)
     case unit
-    when 'years';   3600 * 8 * 260
-    when 'months';  3600 * 8 * 22
-    when 'weeks';   3600 * 8 * 5
-    when 'days';    3600 * 8
-    when 'hours';   3600
-    when 'minutes'; 60
+    when 'years';   YEAR
+    when 'months';  MONTH
+    when 'weeks';   WEEK
+    when 'days';    DAY
+    when 'hours';   HOUR
+    when 'minutes'; MINUTE
     when 'seconds'; 1
     end
   end
