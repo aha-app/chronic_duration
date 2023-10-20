@@ -63,14 +63,7 @@ module ChronicDuration
           if hours >= HOURS_IN_DAY
             days = (hours / HOURS_IN_DAY).to_i
             hours = (hours % HOURS_IN_DAY).to_i
-            if opts[:allow_weeks] && days >= DAYS_IN_WEEK
-              weeks = (days / DAYS_IN_WEEK).to_i
-              days = (days % DAYS_IN_WEEK).to_i
-              if opts[:allow_months] && weeks >= 4
-                months = (weeks / 4).to_i
-                weeks = (weeks % 4).to_i
-              end
-            elsif opts[:allow_months] && days >= DAYS_IN_MONTH
+            if opts[:allow_months] && days >= DAYS_IN_MONTH
               months = (days / DAYS_IN_MONTH).to_i
               days = (days % DAYS_IN_MONTH).to_i
             end
