@@ -63,6 +63,10 @@ module ChronicDuration
           if hours >= HOURS_IN_DAY
             days = (hours / HOURS_IN_DAY).to_i
             hours = (hours % HOURS_IN_DAY).to_i
+            if opts[:allow_months] && days >= DAYS_IN_MONTH
+              months = (days / DAYS_IN_MONTH).to_i
+              days = (days % DAYS_IN_MONTH).to_i
+            end
           end
         end
       end
@@ -211,8 +215,8 @@ private
         raise DurationParseError, "An invalid word #{word.inspect} was used in the string to be parsed."
       end
     end
-    # add '1' at front if string starts with something recognizable but not with a number, like 'day' or 'minute 30sec' 
-    res.unshift(1) if res.length > 0 && mappings[res[0]]  
+    # add '1' at front if string starts with something recognizable but not with a number, like 'day' or 'minute 30sec'
+    res.unshift(1) if res.length > 0 && mappings[res[0]]
     res.join(' ')
   end
 

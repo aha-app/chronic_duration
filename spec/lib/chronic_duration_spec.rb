@@ -162,6 +162,52 @@ describe ChronicDuration do
       end
     end
 
+    context "when expanded options" do
+
+      @longer_exemplars = {
+        (6 * 22 * 8 * 3600 + 8 * 3600) =>
+          {
+            :micro    => '6m3d',
+            :short    => '6m 3d',
+            :default  => '6 ms 3 days',
+            :long     => '6 months 3 days',
+            :chrono   => '6:03:00:00:00'
+          },
+        (260 * 8 * 3600 + 8 * 3600 ).to_i =>
+          {
+            :micro    => '13m1d',
+            :short    => '13m 1d',
+            :default  => '13 ms 1 day',
+            :long     => '13 months 1 day',
+            :chrono   => '13:01:00:00:00'
+          },
+        (3 * 260 * 8 * 3600 + 8 * 3600 ).to_i =>
+          {
+            :micro    => '39m1d',
+            :short    => '39m 1d',
+            :default  => '39 ms 1 day',
+            :long     => '39 months 1 day',
+            :chrono   => '39:01:00:00:00'
+          },
+        (3600 * 8 * 22 * 18) =>
+          {
+            :micro    => '19m1d',
+            :short    => '19m 1d',
+            :default  => '19 ms 1 day',
+            :long     => '19 months 1 day',
+            :chrono   => '19:01:00:00:00'
+          }
+      }
+
+      @longer_exemplars.each do |k, v|
+        v.each do |key, val|
+          it "properly outputs a duration of #{k} seconds as #{val} using the #{key.to_s} format option" do
+            ChronicDuration.output(k, allow_months: true, allow_weeks: true, format: key).should == val
+          end
+        end
+      end
+  end
+
     @keep_zero_exemplars = {
       (true) =>
       {
@@ -213,11 +259,11 @@ describe ChronicDuration do
         end
       end
     end
-    
+
     context "when the unit multiplier changes" do
-      
+
     end
-    
+
   end
 
   describe ".filter_by_type" do
