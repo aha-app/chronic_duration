@@ -58,11 +58,11 @@ describe ChronicDuration do
     end
 
     it "should return a float if seconds are in decimals" do
-      ChronicDuration.parse('12 mins 3.141 seconds').is_a?(Float).should be_true
+      ChronicDuration.parse('12 mins 3.141 seconds').is_a?(Float).should be_truthy
     end
 
     it "should return an integer unless the seconds are in decimals" do
-      ChronicDuration.parse('12 mins 3 seconds').is_a?(Integer).should be_true
+      ChronicDuration.parse('12 mins 3 seconds').is_a?(Integer).should be_truthy
     end
 
     it "should be able to parse minutes by default" do
@@ -162,10 +162,9 @@ describe ChronicDuration do
       end
     end
 
-    context "when expanded options" do
-
+    context "when expanded month options" do
       @longer_exemplars = {
-        (6 * 22 * 8 * 3600 + 8 * 3600) =>
+        (6 * 22 * 8 * 3600 + 3 * 8 * 3600) =>
           {
             :micro    => '6m3d',
             :short    => '6m 3d',
@@ -173,7 +172,7 @@ describe ChronicDuration do
             :long     => '6 months 3 days',
             :chrono   => '6:03:00:00:00'
           },
-        (260 * 8 * 3600 + 8 * 3600 ).to_i =>
+        (13 * 22 * 8 * 3600 + 8 * 3600).to_i =>
           {
             :micro    => '13m1d',
             :short    => '13m 1d',
@@ -181,7 +180,7 @@ describe ChronicDuration do
             :long     => '13 months 1 day',
             :chrono   => '13:01:00:00:00'
           },
-        (3 * 260 * 8 * 3600 + 8 * 3600 ).to_i =>
+        (39 * 22 * 8 * 3600 + 8 * 3600 ).to_i =>
           {
             :micro    => '39m1d',
             :short    => '39m 1d',
@@ -189,7 +188,7 @@ describe ChronicDuration do
             :long     => '39 months 1 day',
             :chrono   => '39:01:00:00:00'
           },
-        (3600 * 8 * 22 * 18) =>
+        (19 * 22 * 8 * 3600 + 8 * 3600) =>
           {
             :micro    => '19m1d',
             :short    => '19m 1d',
@@ -202,11 +201,56 @@ describe ChronicDuration do
       @longer_exemplars.each do |k, v|
         v.each do |key, val|
           it "properly outputs a duration of #{k} seconds as #{val} using the #{key.to_s} format option" do
-            ChronicDuration.output(k, allow_months: true, allow_weeks: true, format: key).should == val
+            ChronicDuration.output(k, allow_months: true, format: key).should == val
           end
         end
       end
-  end
+    end
+
+    context "when expanded week options" do
+      @longer_exemplars = {
+        (6 * 5 * 8 * 3600 + 3 * 8 * 3600) =>
+          {
+            :micro    => '6w3d',
+            :short    => '6w 3d',
+            :default  => '6 wks 3 days',
+            :long     => '6 weeks 3 days',
+            :chrono   => '6:03:00:00:00'
+          },
+        (13 * 5 * 8 * 3600 + 8 * 3600).to_i =>
+          {
+            :micro    => '13w1d',
+            :short    => '13w 1d',
+            :default  => '13 wks 1 day',
+            :long     => '13 weeks 1 day',
+            :chrono   => '13:01:00:00:00'
+          },
+        (39 * 5 * 8 * 3600 + 8 * 3600 ).to_i =>
+          {
+            :micro    => '39w1d',
+            :short    => '39w 1d',
+            :default  => '39 wks 1 day',
+            :long     => '39 weeks 1 day',
+            :chrono   => '39:01:00:00:00'
+          },
+        (19 * 5 * 8 * 3600 + 8 * 3600) =>
+          {
+            :micro    => '19w1d',
+            :short    => '19w 1d',
+            :default  => '19 wks 1 day',
+            :long     => '19 weeks 1 day',
+            :chrono   => '19:01:00:00:00'
+          }
+      }
+
+      @longer_exemplars.each do |k, v|
+        v.each do |key, val|
+          it "properly outputs a duration of #{k} seconds as #{val} using the #{key.to_s} format option" do
+            ChronicDuration.output(k, allow_weeks: true, format: key).should == val
+          end
+        end
+      end
+    end
 
     @keep_zero_exemplars = {
       (true) =>

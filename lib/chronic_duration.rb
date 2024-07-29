@@ -66,6 +66,9 @@ module ChronicDuration
             if opts[:allow_months] && days >= DAYS_IN_MONTH
               months = (days / DAYS_IN_MONTH).to_i
               days = (days % DAYS_IN_MONTH).to_i
+            elsif opts[:allow_weeks] && days >= DAYS_IN_WEEK
+              weeks = (days / DAYS_IN_WEEK).to_i
+              days = (days % DAYS_IN_WEEK).to_i
             end
           end
         end
@@ -109,13 +112,15 @@ module ChronicDuration
     end
 
     result = [:years, :months, :weeks, :days, :hours, :minutes, :seconds].map do |t|
-      next if t == :weeks && !opts[:weeks]
+      next if t == :weeks && !opts[:allow_weeks]
+      next if t == :months && opts[:allow_weeks]
+
       num = eval(t.to_s)
       num = ("%.#{decimal_places}f" % num) if num.is_a?(Float) && t == :seconds
       keep_zero = dividers[:keep_zero]
       keep_zero ||= opts[:keep_zero] if t == :seconds
       humanize_time_unit( num, dividers[t], dividers[:pluralize], keep_zero )
-    end.compact!
+    end.compact
 
     result = result[0...opts[:units]] if opts[:units]
 
